@@ -1,0 +1,80 @@
+# Performance Optimization Documentation
+
+This document summarizes the custom scripts added for benchmarking scatter-based
+SPMM and comparing PyG and DGL. It also gives hints on how to run the tests and
+prepare the environment.
+
+## Added Scripts
+
+- `benchmark/spmm_benchmark.py`: Micro benchmark comparing `spmm` and
+  `spmm_scatter`.
+- `examples/gcn_spmm_opt.py`: GCN example that toggles between the default
+  SPMM and a scatter-based version.
+- `examples/gat_spmm_opt.py`: GAT example with a `CustomGATConv` that can use
+  scatter-based aggregation.
+- `examples/dgl_gcn.py`: Simple GCN implementation using DGL to compare against
+  PyG.
+- `examples/ogbn_products_loader.py`: Demonstrates neighbour sampling on the
+  large OGBN-Products dataset.
+- `examples/plot_results.py`: Utility to visualize logged metrics.
+- `test/utils/test_spmm_scatter.py`: Test to ensure `spmm_scatter` matches the
+  default `spmm` output.
+- `torch_geometric/utils/custom_spmm.py`: Defines the `spmm_scatter` operator
+  used by the optimized examples.
+- `torch_geometric/utils/__init__.py`: Exports `spmm_scatter` so it can be
+  imported from `torch_geometric.utils`.
+
+## Environment Setup
+
+1. Install PyTorch and CUDA following the instructions at
+   [pytorch.org](https://pytorch.org). Example (CPU only):
+   ```bash
+   pip install torch --extra-index-url https://download.pytorch.org/whl/cpu
+   ```
+2. Install PyTorch Geometric and its dependencies:
+   ```bash
+   pip install -r requirements.txt
+   pip install -e .
+   ```
+3. For DGL experiments install dgl:
+   ```bash
+   pip install dgl
+   ```
+
+Depending on your machine and CUDA toolkit you may need to adjust the versions
+of these packages.
+
+## Running Examples
+
+- Benchmark scatter vs. default SPMM:
+  ```bash
+  python benchmark/spmm_benchmark.py --num_nodes 10000 --num_edges 50000
+  ```
+- Train GCN with scatter SPMM:
+  ```bash
+  python examples/gcn_spmm_opt.py --dataset Cora --spmm scatter
+  ```
+- Train GAT with scatter SPMM:
+  ```bash
+  python examples/gat_spmm_opt.py --dataset Cora --spmm scatter
+  ```
+- Compare with DGL implementation:
+  ```bash
+  python examples/dgl_gcn.py --dataset Cora
+  ```
+
+For OGBN-Products use the neighbour loader example:
+```bash
+python examples/ogbn_products_loader.py --spmm scatter
+```
+
+## Testing
+
+Run the provided unit test to check that `spmm_scatter` matches the default
+implementation:
+```bash
+pytest -k spmm_scatter -q
+```
+
+If PyTorch is not installed the test will fail with `ModuleNotFoundError`.
+
