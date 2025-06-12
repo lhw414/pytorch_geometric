@@ -34,6 +34,7 @@ from .sparse import (dense_to_sparse, is_sparse, is_torch_sparse_tensor,
                      to_torch_csc_tensor, to_torch_sparse_tensor,
                      to_edge_index)
 from ._spmm import spmm
+from .custom_spmm import spmm_scatter
 from ._unbatch import unbatch, unbatch_edge_index
 from ._one_hot import one_hot
 from ._normalized_cut import normalized_cut
@@ -112,6 +113,7 @@ __all__ = [
     'to_torch_sparse_tensor',
     'to_edge_index',
     'spmm',
+    'spmm_scatter',
     'unbatch',
     'unbatch_edge_index',
     'one_hot',
